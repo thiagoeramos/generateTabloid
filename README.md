@@ -1,0 +1,2 @@
+# generateTabloid
+Gerador de Tabloides
