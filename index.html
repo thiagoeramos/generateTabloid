@@ -3,85 +3,142 @@
 <head>
   <meta charset="utf-8">
   <title>jQuery UI Draggable - Constrain movement</title>
+
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
   <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
   <style>
-  .boxText {  padding: 2px  !important; float: left; position: absolute; line-height: normal;  background: none; border:1px solid transparent;  }
-  .boxText:hover{ border:1px solid #000000;  background: #F9F9F9; }
-  .boxText:hover:before{ content: "Clique aqui para editar"; top: 0px; left: 0px; padding: 5px; font-size: 14px;  position: absolute; background: #F4F411;}
+    .boxText {  padding: 2px  !important; float: left; position: absolute; line-height: normal;  background: none; border:1px solid transparent;  }
+    .boxText:hover{ border:1px solid #000000;  background: #F9F9F9; }
 
+    .boxText:hover:before,.boxDefault:before{ content: "Clique aqui para editar";  z-index: 101;  top: 0px; left: 0px; padding: 5px; font-size: 14px;  position: absolute; background: #F4F411;}
 
-  .titleText{ font-size: 50px; }
-  .subText{ font-size: 30px; }
-  
-  #containment-wrapper { width: 69%; height:550px; border:2px solid #ccc; padding: 5px; position: absolute }
-  h3 { clear: left; }
+    .boxText p{ width: auto;  word-break: break-all; height: auto; float: left; margin: 0px; padding: 0px;position: relative; }
+    .boxText p input,.boxText p textarea{ display: none; font-size: inherit; }
+
+    .boxActive:before{ content: "" !important; top: 0px; left: 0px; padding: 5px; font-size: 14px;  position: absolute; background: transparent !important;}
+    .boxActive { background: #ffffff !important; z-index: 101 !important;  }
+     
+    .titleText{ font-size: 50px; }
+    .subText{ font-size: 30px; }
+
+    #content { width: 69%; height:550px; border:2px solid #ccc; padding: 5px; position: absolute }
+
   </style>
   <script>
-  $(function() {
-
-    $( ".boxText" ).draggable({
-      containment: "#containment-wrapper",
-      scroll: false,
-      zIndex: 100,
-      distance: 10,
-
-      drag: function( event, ui ) {
-
-          var elementActive=$(this);
-          elementActive=elementActive;
-
-          ui.position.left = (ui.position.left>=0)?ui.position.left:0;
-          ui.position.top = (ui.position.left>=0)?ui.position.top:0;
-
-          elementActive.find('input[text^="position_left"]').val(ui.position.left);
-          elementActive.find('input[text^="position_top"]').val(ui.position.top);
+    $(function() {
 
 
+      //ARRASTANDO ELEMENTOS
+      $( ".boxText" ).draggable({
+        
+        containment: "#content",
+        scroll: false,
+        zIndex: 100,
 
-      },
-       stop: function( event, ui ) {
+        drag: function( event, ui ) {
 
-          var elementActive=$(this);
-          elementActive=elementActive;
+            var elementActive=$(this);
+            elementActive.addClass('boxActive');
 
-          elementActive.removeClass('boxActive');
+            ui.position.left = (ui.position.left>=0)?ui.position.left:0;
+            ui.position.top = (ui.position.left>=0)?ui.position.top:0;
+
+            elementActive.find('input[text^="position_left"]').val(ui.position.left);
+            elementActive.find('input[text^="position_top"]').val(ui.position.top);
+
+        },
+         stop: function( event, ui ) {
+
+            var elementActive=$(this);
+            elementActive=elementActive;
+            elementActive.removeClass('boxActive');
+        }
+      });
+
+      //REDIMENCIONANDO ELEMENTOS
+      $( ".boxText" ).resizable({
+       containment: "#content",
+        resize: function( event, ui ) {
+
+            var elementActive=$(this);
+           elementActive=elementActive;
+
+           elementActive.find('input[text^="position_width"]').val(ui.size.width);
+           elementActive.find('input[text^="position_height"]').val(ui.size.height);
+           
+           elementActive.find('textarea').width((ui.size.width)-10);
+           elementActive.find('textarea').height((ui.size.height)-10);
+
+           elementActive.resizable({
+             minHeight: elementActive.find('img').height(),
+             maxHeight: elementActive.find('img').height(),
+           });
 
 
+        } ,
+         stop: function( event, ui ) {
 
-      }
+        }
+     });
+
+     // EDITANDO ELEMENTOS
+    $( ".boxText" ).on('click',function(){
+      
+          $(this).addClass('boxActive');
+          
+          if($(this).hasClass('logotipo')){
+              var hElement=$(this).find('p  input');
+          }else{
+              var hElement=$(this).find('p  textarea');
+
+              hElement.width($(this).width()-10);
+              hElement.height($(this).height()-10);
+          }
+
+           lastText =$(this).find('p').text();
+
+            hElement.show();
+    
+
+            $(this).find('p').html(hElement);
+            $(this).find('p  textarea').focus();
+           
     });
 
-    //$( "#draggable5" ).draggable({ containment: "parent" });
+      // EDITANDO ELEMENTOS
+      $(document).on('blur', ".boxText textarea",function(e){
 
-     $( ".boxText" ).resizable({
-      containment: "#containment-wrapper",
-       resize: function( event, ui ) {
+          var hElement=$(this);
 
-           var elementActive=$(this);
-          elementActive=elementActive;
-
-          elementActive.find('input[text^="position_width"]').val(ui.size.width);
-          elementActive.find('input[text^="position_height"]').val(ui.size.height);
-
-          elementActive.resizable({
-            minHeight: elementActive.find('img').height(),
-            maxHeight: elementActive.find('img').height(),
-          });
-
-
-       } ,
-        stop: function( event, ui ) {
-
-           
+          hElement.parent().parent().removeClass('boxActive');
+          
+          var newText =hElement.val().replace(/<br>/gi,"\n");
 
           
-       }
-    });
+          hElement.hide();
 
-  });
+          if (newText!="") {
+               newText=newText.replace(/\n/g,"<br>");
+          }
+          
+            var activeElement=hElement.parent();
+            activeElement.html(newText);
+            
+            activeElement.append(hElement);
+            
+            //activeElement.parent().width(activeElement.width());
+            //activeElement.parent().height(activeElement.height());
+          
+
+            
+      });
+
+
+
+    });
    
   </script>
 
@@ -89,82 +146,105 @@
 </head>
 <body>
 
-<div id="containment-wrapper">
-  <div class="boxText titleText ui-widget-content ui-state-active ui-state-active " style="left: 0px; top: 0px; width: 888px; height: 77px;">
-  O nome da sua empresa vai aqui
+  <div id="content">
+      <div class="boxText titleText ui-widget-content ui-state-active ui-state-active " style="left: 0px; top: 0px; width: 888px; height: 77px;">
+      <p>
+        O nome da sua empresa vai aqui
+        <textarea name="corporate_text" />O nome da sua empresa vai aqui</textarea>
+      </p>
 
 
-  <input type="hidden" text="position_left[corporate_text]" value="0" />
-  <input type="hidden" text="position_top[corporate_text]" value="0" />
-  <input type="hidden" text="position_width[corporate_text]" value="0" />
-  <input type="hidden" text="position_height[corporate_text]" value="0" />
+      <input type="hidden" name="position_left[corporate_text]" value="0" />
+      <input type="hidden" name="position_top[corporate_text]" value="0" />
+      <input type="hidden" name="position_width[corporate_text]" value="0" />
+      <input type="hidden" name="position_height[corporate_text]" value="0" />
 
 
-  </div>
+      </div>
+
+      <div class="boxText subText  ui-widget-content ui-state-active" style="left: 0px; top: 93px; width: 569px; height: 35px;">
+
+
+      <p>
+        Seu cargo aqui
+        <textarea  name="role" />Seu cargo aqui</textarea>
+      </p>
+
+      <input type="hidden" name="position_left[role]" value="0" />
+      <input type="hidden" name="position_top[role]" value="0" />
+      <input type="hidden" name="position_width[role]" value="0" />
+      <input type="hidden" name="position_height[role]" value="0" />
+
+      </div>
+
+      <div class="boxText subText  ui-widget-content"  style="left: 0px; top: 298px; width: 503px; height: 89px;">
+   
+      <p>
+        Insira suas informações de contato neste espaço
+         <textarea  name="tel" />Insira suas informações de contato neste espaço</textarea>
+      </p>
+      
+
+      <input type="hidden"name="position_left[tel]" value="0" />
+      <input type="hidden"name="position_top[tel]" value="0" />
+      <input type="hidden"name="position_width[tel]" value="0" />
+      <input type="hidden"name="position_height[tel]" value="0" />
+
+      </div>
+
+      <div class="boxText subText  ui-widget-content" style="left: 0px; top: 158px; width: 505px; height: 110px;">
   
-  <div class="boxText subText  ui-widget-content ui-state-active" style="left: 0px; top: 93px; width: 569px; height: 35px;">
+       <p>
+         Local, sua rua, sua cidade/<br />
+          município,  seu estado<br />
+          /região, seu país/localização
+          <textarea  name="address" />Local, sua rua, sua cidade/
+          município,  seu estado
+          /região, seu país/localização</textarea>
+      </p>
+       
 
-    Seu cargo aqui
+      <input type="hidden"name="position_left[address]" value="0" />
+      <input type="hidden"name="position_top[address]" value="0" />
+      <input type="hidden"name="position_width[address]" value="0" />
+      <input type="hidden"name="position_height[address]" value="0" />
 
+      </div>
 
-    <input type="hidden" text="position_left[role]" value="0" />
-    <input type="hidden" text="position_top[role]" value="0" />
-    <input type="hidden" text="position_width[role]" value="0" />
-          <input type="hidden" text="position_height[role]" value="0" />
-    
-  </div>
-
-  <div class="boxText subText  ui-widget-content"  style="left: 0px; top: 298px; width: 503px; height: 89px;">
-    Insira suas informações de contato neste espaço
-
-
-    <input type="hidden" text="position_left[tel]" value="0" />
-    <input type="hidden" text="position_top[tel]" value="0" />
-    <input type="hidden" text="position_width[tel]" value="0" />
-    <input type="hidden" text="position_height[tel]" value="0" />
-    
-  </div>
-
-   <div class="boxText subText  ui-widget-content" style="left: 0px; top: 158px; width: 505px; height: 110px;">
-    Local, sua rua, sua cidade/<br />
-    município,  seu estado<br />
-    /região, seu país/localização
-
+      <br  />
+      <br  />
+      <div class="boxText subText  ui-widget-content logotipo" style="left:613px; top: 211px; width: 233px; height: 176px;">
+ 
+       <p>
+        <img src="2014-09-09-102322.jpg" width="100%"/>
+        <input type="file" name="logo" value="2014-09-09-102322.jpg" />
+      </p>
+       
 
 
+      <input type="hidden"name="position_left[logo]" value="0" />
+      <input type="hidden"name="position_top[logo]" value="0" />
+      <input type="hidden"name="position_width[logo]" value="0" />
+      <input type="hidden"name="position_height[logo]" value="0" />
 
-     <input type="hidden" text="position_left[address]" value="0" />
-     <input type="hidden" text="position_top[address]" value="0" />
-     <input type="hidden" text="position_width[address]" value="0" />
-      <input type="hidden" text="position_height[address]" value="0" />
+      <br/>
+      </div>
 
-  </div>
-
-  <br  />
-  <br  />
-  <div class="boxText subText  ui-widget-content" style="left:628px; top: 133px; width: 212px; height: 146px;">
-   <img src="2014-09-09-102322.jpg" width="100%"/>
-
-
-     <input type="hidden" text="position_left[logo]" value="0" />
-     <input type="hidden" text="position_top[logo]" value="0" />
-     <input type="hidden" text="position_width[logo]" value="0" />
-     <input type="hidden" text="position_height[logo]" value="0" />
-
-    <br/>
-  </div>
+      <br clear="left" />
+      <div class="boxText subText  ui-widget-content"  style="left:0px; top: 484px; width: 645px; height: 56px;">
   
-  <br clear="left" />
-  <div class="boxText subText  ui-widget-content"  style="left:0px; top: 484px; width: 645px; height: 56px;">
+      <p>
+         INFORME O WEBSITE
+        <textarea  name="website" />INFORME O WEBSITE</textarea>
+      </p>
 
-   INFORME O WEBSITE
-     <input type="hidden" text="position_left[website]" value="0" />
-     <input type="hidden" text="position_top[website]" value="0" />
-     <input type="hidden" text="position_width[website]" value="0" />
-     <input type="hidden" text="position_height[website]" value="0" />
+      <input type="hidden"name="position_left[website]" value="0" />
+      <input type="hidden"name="position_top[website]" value="0" />
+      <input type="hidden"name="position_width[website]" value="0" />
+      <input type="hidden"name="position_height[website]" value="0" />
+      </div>
+
   </div>
-
-</div>
 
 
 
