@@ -65,6 +65,18 @@
 
           elementActive.find('input[text^="position_width"]').val(ui.size.width);
           elementActive.find('input[text^="position_height"]').val(ui.size.height);
+
+          elementActive.resizable({
+            minHeight: elementActive.find('img').height(),
+            maxHeight: elementActive.find('img').height(),
+          });
+
+
+       } ,
+        stop: function( event, ui ) {
+
+           
+
           
        }
     });
@@ -131,15 +143,14 @@
   <br  />
   <br  />
   <div class="boxText subText  ui-widget-content" style="left:628px; top: 133px; width: 212px; height: 146px;">
-    seu logotipo aqui <br/>
-    <input type="file" /> <br/>
+   <img src="2014-09-09-102322.jpg" width="100%"/>
 
 
      <input type="hidden" text="position_left[logo]" value="0" />
      <input type="hidden" text="position_top[logo]" value="0" />
      <input type="hidden" text="position_width[logo]" value="0" />
      <input type="hidden" text="position_height[logo]" value="0" />
-     
+
     <br/>
   </div>
   

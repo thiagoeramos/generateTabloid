@@ -1,32 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <title>Demo &raquo; Using resize callbacks &raquo; gridster.js</title>
+  <link rel="stylesheet" type="text/css" href="http://gridster.net/dist/jquery.gridster.css">
+  <link rel="stylesheet" type="text/css" href="http://gridster.net/demos/assets/demo.css">
 
-<HTML>
-<HEAD>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
-<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+  <style>
+    #log {
+      margin-top: 20px;
+      max-height: 400px;
+      overflow: auto;
+      max-width: 250px;
+      border: 1px solid #DDD;
+    }
+  </style>
+</head>
 
-<TITLE>jQuery Resizable and Draggable Demo - ViralPatel.net</TITLE>
-<STYLE>body,input{font-family:Calibri,Arial;margin:0px}h1{margin:0 0 0 20px}html,body,#container{height:100%}
-body>#container{height:auto;min-height:100%}
-#header{height:50px;background-color:#ddd;border-bottom:1px solid #aaa;width:100%}
-#footer{font-size:12px;clear:both;position:relative;z-index:10;height:3em;margin-top:-3em;text-align:center}
-.demo{width:150px;height:150px;padding:5px;background-color:#f81;position:absolute;top:150px;}
-#content{padding-bottom:3em}
-</STYLE>
-</HEAD>
-<BODY>
-<div id="container">
-<div id="header">
-	<h1>jQuery Resizable and Draggable Demo</h1>
-</div>
-<p><a href="">Click here to view Tutorial</a></p>
-<div class="demo">Move Me!!... Resize Me!!...</div>
-<div class="demo" style="left: 100px;">Move Me!!... Resize Me!!...</div>
-</div>
-<div id="footer">
-Copyright &copy; <a href="http://viralpatel.net">ViralPatel.net</a>
-| <a href="http://viralpatel.net/blogs/about">About</a>
-</div>
-</BODY>
-<SCRIPT>$(function(){$('.demo').draggable().resizable();});</SCRIPT>
-</HTML>
+<body>
+
+  <h1>Resize callbacks</h1>
+
+  <p>Resize some widgets and see the log below.</p>
+
+
+  <div class="gridster">
+    <ul>
+      <li data-row="1" data-col="1" data-sizex="3" data-sizey="4"><img src="2014-09-09-102322.jpg" width="100%"/></li>
+      <li data-row="2" data-col="3" data-sizex="1" data-sizey="2">1</li>
+      <li data-row="1" data-col="4" data-sizex="1" data-sizey="1">2</li>
+      <li data-row="3" data-col="2" data-sizex="3" data-sizey="1">3</li>
+
+      <li data-row="4" data-col="2" data-sizex="1" data-sizey="1">6</li>
+      <li data-row="5" data-col="2" data-sizex="1" data-sizey="1">7</li>
+      <li data-row="4" data-col="4" data-sizex="1" data-sizey="1">8</li>
+      <li data-row="1" data-col="5" data-sizex="1" data-sizey="3">9</li>
+    </ul>
+  </div>
+
+  <h3>Log</h3>
+  <div id="log"></div>
+
+    <script type="text/javascript" src="http://gridster.net/demos/assets/jquery.js"></script>
+    <script src="http://gridster.net/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      var gridster;
+
+      $(function(){
+
+        var log = document.getElementById('log');
+
+
+        gridster = $(".gridster ul").gridster({
+          widget_base_dimensions: [100, 55],
+          widget_margins: [5, 5],
+          resize: {
+            enabled: true,
+            start: function(e, ui, $widget) {
+              log.innerHTML = 'START position: ' + ui.position.top +' '+ ui.position.left + "<br >" + log.innerHTML;
+            },
+
+            resize: function(e, ui, $widget) {
+              log.innerHTML = 'RESIZE offset: ' + ui.pointer.diff_top +' '+ ui.pointer.diff_left + "<br >" + log.innerHTML;
+            },
+
+            stop: function(e, ui, $widget) {
+              log.innerHTML = 'STOP position: ' + ui.position.top +' '+ ui.position.left + "<br >" + log.innerHTML;
+            }
+          }
+        }).data('gridster');
+
+
+      });
+    </script>
+</body>
+</html>
