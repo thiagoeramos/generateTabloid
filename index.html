@@ -24,12 +24,11 @@
     .titleText{ font-size: 50px; }
     .subText{ font-size: 30px; }
 
-    #content { width: 69%; height:550px; border:2px solid #ccc; padding: 5px; position: absolute }
+    #content { width: 1000px; height:550px; border:2px solid #ccc; padding: 5px; position: relative }
 
   </style>
   <script>
     $(function() {
-
 
       //ARRASTANDO ELEMENTOS
       $( ".boxText" ).draggable({
@@ -46,8 +45,9 @@
             ui.position.left = (ui.position.left>=0)?ui.position.left:0;
             ui.position.top = (ui.position.left>=0)?ui.position.top:0;
 
-            elementActive.find('input[text^="position_left"]').val(ui.position.left);
-            elementActive.find('input[text^="position_top"]').val(ui.position.top);
+            elementActive.find('input[name^="position_left"]').val(ui.position.left);
+            elementActive.find('input[name^="position_top"]').val(ui.position.top);
+          
 
         },
          stop: function( event, ui ) {
@@ -66,8 +66,8 @@
             var elementActive=$(this);
            elementActive=elementActive;
 
-           elementActive.find('input[text^="position_width"]').val(ui.size.width);
-           elementActive.find('input[text^="position_height"]').val(ui.size.height);
+           elementActive.find('input[name^="position_width"]').val(ui.size.width);
+           elementActive.find('input[name^="position_height"]').val(ui.size.height);
            
            elementActive.find('textarea').width((ui.size.width)-10);
            elementActive.find('textarea').height((ui.size.height)-10);
@@ -145,12 +145,12 @@
 
 </head>
 <body>
-
+<form action="process_images.php" method="post" >
   <div id="content">
       <div class="boxText titleText ui-widget-content ui-state-active ui-state-active " style="left: 0px; top: 0px; width: 888px; height: 77px;">
       <p>
         O nome da sua empresa vai aqui
-        <textarea name="corporate_text" />O nome da sua empresa vai aqui</textarea>
+        <textarea name="corporate_text" >O nome da sua empresa vai aqui</textarea>
       </p>
 
 
@@ -167,7 +167,7 @@
 
       <p>
         Seu cargo aqui
-        <textarea  name="role" />Seu cargo aqui</textarea>
+        <textarea  name="role" >Seu cargo aqui</textarea>
       </p>
 
       <input type="hidden" name="position_left[role]" value="0" />
@@ -181,7 +181,7 @@
    
       <p>
         Insira suas informações de contato neste espaço
-         <textarea  name="tel" />Insira suas informações de contato neste espaço</textarea>
+         <textarea  name="tel" >Insira suas informações de contato neste espaço</textarea>
       </p>
       
 
@@ -217,10 +217,8 @@
  
        <p>
         <img src="2014-09-09-102322.jpg" width="100%"/>
-        <input type="file" name="logo" value="2014-09-09-102322.jpg" />
+        <input type="hidden" name="logo" value="2014-09-09-102322.jpg" />
       </p>
-       
-
 
       <input type="hidden"name="position_left[logo]" value="0" />
       <input type="hidden"name="position_top[logo]" value="0" />
@@ -245,8 +243,12 @@
       </div>
 
   </div>
+  
+  <br  clear="left" />
 
 
+<input type="submit" name="btSend" value="Gerar Imagem" />
+</form>
 
 </body>
 </html>
