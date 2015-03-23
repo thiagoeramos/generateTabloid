@@ -7,9 +7,19 @@ $img = imagecreatetruecolor($width, $height);
 $white = imagecolorallocate($img, 255, 255, 255);
 imagefilledrectangle($img, 0, 0, $width, $height, $white);
 
+$font=getcwd().'/Frutiger_57_Condensed.ttf';
 
-imagestring($img,2,$_POST['position_left']['corporate_text'],$_POST['position_top']['corporate_text'], $_POST['corporate_text'], imagecolorallocate($img, 0, 0, 0));
-imagestring($img,2,$_POST['position_left']['role'],$_POST['position_top']['role'], $_POST['role'], imagecolorallocate($img, 0, 0, 255));
+$htitleFont = imagefontheight(50)+25;
+
+imagettftext ( $img , 44, 0, $_POST['position_left']['corporate_text'],($_POST['position_top']['corporate_text']+$htitleFont), imagecolorallocate($img, 0, 0, 0),$font,$_POST['corporate_text']);
+
+$htitleFont = imagefontheight(28)+25;
+imagettftext ( $img , 24, 0, $_POST['position_left']['role'],($_POST['position_top']['role']+$htitleFont), imagecolorallocate($img, 0, 0, 0),$font,$_POST['role']);
+imagettftext ( $img , 24, 0, $_POST['position_left']['tel'],($_POST['position_top']['tel']+$htitleFont), imagecolorallocate($img, 0, 0, 0),$font,$_POST['tel']); 
+imagettftext ( $img , 24, 0, $_POST['position_left']['address'],($_POST['position_top']['address']+$htitleFont), imagecolorallocate($img, 0, 0, 0),$font,$_POST['address']);
+imagettftext ( $img , 24, 0, $_POST['position_left']['website'],($_POST['position_top']['website']+$htitleFont), imagecolorallocate($img, 0, 0, 0),$font,$_POST['website']);
+
+
 
 $filename = pathinfo($_POST['logo'], PATHINFO_BASENAME);
 $logo = imagecreatefromstring(file_get_contents(getcwd().'/'.$filename));
@@ -55,8 +65,9 @@ imagecopyresized($img, $logo, $_POST['position_left']['logo'],  $_POST['position
 //die();
 // geramos o arquivo final
 
-$imageFileName = 'tabloid/'.date('dmY.His').'jpg';
+$imageFileName = 'tabloid/'.date('dmY.His').'.jpg';
 
  header('Content-Type: image/jpeg');
 imagejpeg($img, $imageFileName, 90);
 
+echo $imageFileName;
